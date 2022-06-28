@@ -1,0 +1,39 @@
+plugins {
+	id 'org.springframework.boot' version '2.7.1'
+	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+	id 'java'
+	id 'base'
+	id 'com.palantir.docker' version '0.22.1'
+	id 'com.palantir.docker-run' version '0.22.1'
+	id 'pl.allegro.tech.build.axion-release' version '1.10.1'
+}
+
+group = 'com.springboot.jenkins.aws'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
+
+project.version = scmVersion.version
+docker{
+	name "${project.name}:${project.version}"
+	files "plugins.txt"
+}
+dockerRun{
+	name "${project.name}"
+	image "${project.name}:${project.version}"
+	ports '8080:8080'
+	clean true
+	daemonize false
+}
